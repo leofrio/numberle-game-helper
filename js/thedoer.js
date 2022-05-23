@@ -41,7 +41,7 @@ function doit() {
         var i=0
         for(data of globalAddedInputs) { 
             var current=document.getElementById(data).value   
-            if(current != "") { 
+            if(current != "") {     
                 var currentPos=parseInt(data.charAt(data.length-1)) 
                 mustHaveInPos[currentPos]=current
             } 
@@ -150,7 +150,8 @@ function doit() {
                     }
                 } 
                 i++
-            }  
+            }   
+            signAmount=signsCounterLeft(generateword)
             var counter=0 
             for(var i=0;i< mustHave.length;i++) { 
                 if(generateword.split("").includes(mustHave[i])) { 
@@ -160,9 +161,6 @@ function doit() {
             if(counter != mustHave.length) { 
                 continue
             }  
-            if(generateword.charAt(0)== "1" && validateEquation(generateword,signAmount)) { 
-                console.log("here")
-            }
             var stopper1=false  
             var stopper2=false  
             for(var i=0;i < mustNotBeInPos.length;i++) { 
@@ -204,12 +202,18 @@ function validateEquation(squabble,signAmount) {
 } 
 //here we do some math to check if the equation generated is actualy valid like the signs actually equal to one another 
 function isValidResult(squabble,signAmount) {   
-    var firstDivision=squabble.split("=") 
-    var equationResult=parseInt(firstDivision[1])  
+    var firstDivision=squabble.split("=")  
+    var oneSided=true  
+    if(firstDivision[1].split("").includes("*") || firstDivision[1].split("").includes("/") || 
+    firstDivision[1].split("").includes("+") ||firstDivision[1].split("").includes("-") ) { 
+        oneSided=false
+    }
+    var equationResult= oneSided ? parseInt(firstDivision[1]) : twosides(firstDivision[1])  
     var finaloperand
     var equationOperand=firstDivision[0]  
-    if(equationOperand.split("").includes("*")) { 
-        var secondDivision=equationOperand.split("*") 
+    if(equationOperand.split("").includes("*")) {  
+        //6    *      3 * 3=18
+        var secondDivision=equationOperand.leoSplit("*",1) 
         if(signAmount > 1) {  
             //i labeled the first second and third to match the example
             for(var i=0;i < secondDivision.length;i++) { 
@@ -341,7 +345,7 @@ function isValidResult(squabble,signAmount) {
             }
         }
     } else if(equationOperand.split("").includes("/")) { 
-        var secondDivision=equationOperand.split("/")
+        var secondDivision=equationOperand.leoSplit("/",1)
         if(signAmount > 1) {  
             //i labeled the first second and third to match the example
             for(var i=0;i < secondDivision.length;i++) { 
@@ -445,7 +449,7 @@ function isValidResult(squabble,signAmount) {
             }
         }
     } else if(equationOperand.split("").includes("+")) { 
-        var secondDivision=equationOperand.split("+")
+        var secondDivision=equationOperand.leoSplit("+",1)
         if(signAmount > 1) {  
             //i labeled the first second and third to match the example
             for(var i=0;i < secondDivision.length;i++) { 
@@ -520,7 +524,7 @@ function isValidResult(squabble,signAmount) {
             }
         }
     } else if(equationOperand.split("").includes("-")) { 
-        var secondDivision=equationOperand.split("-")
+        var secondDivision=equationOperand.leoSplit("-",1)
         if(signAmount > 1) {  
             //i labeled the first second and third to match the example
             for(var i=0;i < secondDivision.length;i++) { 
@@ -664,6 +668,99 @@ window.onload=function(){
             globalNotInputs=[]
         }
     })
+}  
+function signsCounterLeft(squabble) { 
+    var countingArea=squabble.split("=")[0]
+    var counter=0
+    for(var i=0;i< countingArea.length;i++) { 
+        if(countingArea.charAt(i) == "+" || countingArea.charAt(i) == "-" ||countingArea.charAt(i) == "*" ||countingArea.charAt(i) == "/" ) { 
+            counter++
+        }
+    } 
+    return counter;
+}
+function twosides(equationresult) { 
+    if(equationresult.split("*").length > 1) { 
+        var sides=equationresult.split("*")  
+                var side1=sides[0] 
+                var side2=equationresult.substring(equationresult.indexOf("*") +1) 
+                if(side1.split("").includes("*") ||side1.split("").includes("/") ||side1.split("").includes("+") ||side1.split("").includes("-") ) { 
+                    side1=twosides(side1)
+                } 
+                else  { 
+                    side1=parseInt(sides[0])
+                }  
+                if(side2.split("").includes("*") ||side2.split("").includes("/") ||side2.split("").includes("+") ||side2.split("").includes("-") ) { 
+                    side2=twosides(side2)
+                }  
+                else { 
+                    side2=parseInt(sides[1])
+                } 
+                return side1*side2
+    } 
+    else { 
+        if(equationresult.split("/").length > 1) { 
+            var sides=equationresult.split("/")  
+            var side1=sides[0] 
+            var side2=equationresult.substring(equationresult.indexOf("/") +1) 
+            if(side1.split("").includes("*") ||side1.split("").includes("/") ||side1.split("").includes("+") ||side1.split("").includes("-") ) { 
+                side1=twosides(side1)
+            } 
+            else  { 
+                side1=parseInt(sides[0])
+            }  
+            if(side2.split("").includes("*") ||side2.split("").includes("/") ||side2.split("").includes("+") ||side2.split("").includes("-") ) { 
+                side2=twosides(side2)
+            }  
+            else { 
+                side2=parseInt(sides[1])
+            } 
+            return side1/side2
+        } 
+        else {
+            if(equationresult.split("+").length > 1) { 
+                var sides=equationresult.split("+")  
+                var side1=sides[0] 
+                var side2=equationresult.substring(equationresult.indexOf("+") +1) 
+                if(side1.split("").includes("*") ||side1.split("").includes("/") ||side1.split("").includes("+") ||side1.split("").includes("-") ) { 
+                    side1=twosides(side1)
+                } 
+                else  { 
+                    side1=parseInt(sides[0])
+                }  
+                if(side2.split("").includes("*") ||side2.split("").includes("/") ||side2.split("").includes("+") ||side2.split("").includes("-") ) { 
+                    side2=twosides(side2)
+                }  
+                else { 
+                    side2=parseInt(sides[1])
+                } 
+                return side1+side2
+            } 
+            else { 
+                if(equationresult.split("-").length > 1) {
+                    var sides=equationresult.split("-")  
+                    var side1=sides[0] 
+                    var side2=equationresult.substring(equationresult.indexOf("-") +1)
+                    if(side1.split("").includes("*") ||side1.split("").includes("/") ||side1.split("").includes("+") ||side1.split("").includes("-") ) { 
+                        side1=twosides(side1)
+                    } 
+                    else  { 
+                        side1=parseInt(sides[0])
+                    }  
+                    if(side2.split("").includes("*") ||side2.split("").includes("/") ||side2.split("").includes("+") ||side2.split("").includes("-") ) { 
+                        side2=twosides(side2)
+                    }  
+                    else { 
+                        side2=parseInt(sides[1])
+                    } 
+                    return side1-side2
+                }  
+                else {
+                    return NaN
+                }
+            }
+        }
+    }
 }
 function isEmpty(arr) {
     if(arr.length == 0) { 
@@ -696,6 +793,39 @@ function notBlankSlots(arr) {
             }
         } 
         return counter
+} 
+String.prototype.leoSplit=function(object=String,limit) { 
+    limit ||=0  
+    var word=this.valueOf() 
+    var newArr=[] 
+    if(limit == 0) { 
+        newArr=word.split(object) 
+        return newArr
+    }   
+    else {  
+        var index=word.indexOf(object) 
+        if(index == word.length-1) { 
+            newArr.push(word.substring(0,word.length-1))
+            return newArr
+        } 
+        else { 
+            var part1=word.substring(0,index)
+            var part2=word.substring(index+1 ,word.length) 
+            newArr.push(part1) 
+            newArr.push(part2)
+            return newArr
+        }
+    }
+}  
+
+function countingSymbols(word,symbol) { 
+    var counter= 0
+    for(var i=0;i< word.length;i++) { 
+        if(word.charAt(i) == Symbol) { 
+            counter++
+        }
+    } 
+    return counter
 }
 
 function removeSymbol(text)
