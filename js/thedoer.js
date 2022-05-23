@@ -100,7 +100,7 @@ function doit() {
             var signAmount= (nlen >= 7) ? Math.floor(Math.random() *2) +1 : 1 
             var signPos1=Math.floor(Math.random() *nlen)  
             var signPos2=(signAmount >1) ? Math.floor(Math.random() *nlen) : -1 
-            if(equalPos <= Math.floor(nlen/2) || equalPos == nlen-1 
+            if(equalPos <= Math.floor(nlen/3) || equalPos == nlen-1 
             || signPos1 >= nlen-2 || signPos1 ==0 || signPos2 >= nlen-2 || signPos2 == 0 
             || signPos1 == signPos2|| signPos1 == equalPos || signPos2 ==equalPos) { 
                 continue        
