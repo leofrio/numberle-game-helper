@@ -1,0 +1,7 @@
+.buttons { 
+    display:flex
+} 
+.inputs input { 
+    display:table;
+    margin-bottom: 5px;
+} 
