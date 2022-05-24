@@ -9,7 +9,6 @@ function doit() {
     var notn=document.getElementById("notn").value 
     var nlen=parseInt(document.getElementById("nlen").value)   
     var result =document.getElementById("result") 
-    var cant=[]  
     var end=false 
     var mustHaveInPos=[] 
     var mustNotHaveInPos=[] 
@@ -40,11 +39,20 @@ function doit() {
     if(!isEmpty(globalAddedInputs)) { 
         var i=0
         for(data of globalAddedInputs) { 
-            var current=document.getElementById(data).value   
-            if(current != "") {     
-                var currentPos=parseInt(data.charAt(data.length-1)) 
-                mustHaveInPos[currentPos]=current
+            if(i<10) {
+                var current=document.getElementById(data).value   
+                if(current != "") {     
+                    var currentPos=parseInt(data.charAt(data.length-1)) 
+                    mustHaveInPos[currentPos]=current
+                }  
             } 
+            else { 
+                var current=document.getElementById(data).value   
+                if(current != "") {     
+                    var currentPos=parseInt(data.charAt(data.length-2) + data.charAt(data.length-1)) 
+                    mustHaveInPos[currentPos]=current
+                }  
+            }
             i++
         } 
             
@@ -55,7 +63,7 @@ function doit() {
                 var current=document.getElementById(data).value    
                 if(current != "") { 
                     var numbers=current.split(",")
-                    var currentPos=parseInt(data.charAt(data.length-1))  
+                    var currentPos= (i > 9) ? parseInt(data.charAt(data.length-2) + data.charAt(data.length-1)) : parseInt(data.charAt(data.length-1))  
                     for(let i=0;i< numbers.length;i++) { 
                           mustNotHaveInPos[currentPos].push(numbers[i])
                     }
@@ -215,7 +223,16 @@ function isValidResult(squabble,signAmount) {
         //6    *      3 * 3=18
         var secondDivision=equationOperand.leoSplit("*",1) 
         if(signAmount > 1) {  
-            //i labeled the first second and third to match the example
+            //i labeled the first second and third to match the example 
+            if(signAmount >2 ) { 
+                finaloperand=bigEquationOpe(equationOperand,"*")
+                if(finaloperand == equationOperand) { 
+                    return true 
+                } 
+                else { 
+                    return false
+                }
+            } 
             for(var i=0;i < secondDivision.length;i++) { 
                 if(secondDivision[i].split("").includes("*")) { 
                    if(i ==0) {  
@@ -348,6 +365,16 @@ function isValidResult(squabble,signAmount) {
         var secondDivision=equationOperand.leoSplit("/",1)
         if(signAmount > 1) {  
             //i labeled the first second and third to match the example
+            
+            if(signAmount >2 ) { 
+                finaloperand=bigEquationOpe(equationOperand,"/")
+                if(finaloperand == equationOperand) { 
+                    return true 
+                } 
+                else { 
+                    return false
+                }
+            }
             for(var i=0;i < secondDivision.length;i++) { 
                 if(secondDivision[i].split("").includes("/")) { 
                     if(i ==0) {  
@@ -452,6 +479,15 @@ function isValidResult(squabble,signAmount) {
         var secondDivision=equationOperand.leoSplit("+",1)
         if(signAmount > 1) {  
             //i labeled the first second and third to match the example
+            if(signAmount >2 ) { 
+                finaloperand=bigEquationOpe(equationOperand,"+")
+                if(finaloperand == equationOperand) { 
+                    return true 
+                } 
+                else { 
+                    return false
+                }
+            }
             for(var i=0;i < secondDivision.length;i++) { 
                 if(secondDivision[i].split("").includes("+")) { 
                     if(i ==0) {  
@@ -527,6 +563,15 @@ function isValidResult(squabble,signAmount) {
         var secondDivision=equationOperand.leoSplit("-",1)
         if(signAmount > 1) {  
             //i labeled the first second and third to match the example
+            if(signAmount >2 ) { 
+                finaloperand=bigEquationOpe(equationOperand,"-")
+                if(finaloperand == equationOperand) { 
+                    return true 
+                } 
+                else { 
+                    return false
+                }
+            }
             for(var i=0;i < secondDivision.length;i++) { 
                 if(secondDivision[i].split("").includes("-")) { 
                     if(i ==0) {  
@@ -794,6 +839,47 @@ function notBlankSlots(arr) {
         } 
         return counter
 } 
+function bigEquationOpe(squabble,signToOperate) { 
+    var part1=squabble.leoSplit(signToOperate,1)[0] 
+    var part2=squabble.leoSplit(signToOperate,1)[1]
+    if(countingSymbols(part1) >1 ) { 
+        if(part1.split("").include("*")) { 
+            part1=bigEquationOpe(part1,"*")
+        } else if(part1.split("").include("/")) { 
+            part1=bigEquationOpe(part1,"/")
+        } else if(part1.split("").include("+")) { 
+            part1=bigEquationOpe(part1,"+")
+        } else if(part1.split("").include("-")) { 
+            part1=bigEquationOpe(part1,"-")
+        }
+    } 
+    else { 
+        part1=parseInt(part1)
+    } 
+    if(countingSymbols(part2) >1) { 
+        if(part2.split("").include("*")) { 
+            part2=bigEquationOpe(part2,"*")
+        } else if(part2.split("").include("/")) { 
+            part2=bigEquationOpe(part2,"/")
+        } else if(part2.split("").include("+")) { 
+            part2=bigEquationOpe(part2,"+")
+        } else if(part2.split("").include("-")) { 
+            part2=bigEquationOpe(part2,"-")
+        }
+    } 
+    else{ 
+        part2=parseInt(part2)
+    } 
+    if(signToOperate == "*") { 
+        return part1 *part2
+    } else if(signToOperate == "/") {
+        return part1/part2 
+    } else if(signToOperate == "+") { 
+        return part1 + part2
+    }else if(signToOperate == "-") { 
+        return part1-part2
+    }
+}
 String.prototype.leoSplit=function(object=String,limit) { 
     limit ||=0  
     var word=this.valueOf() 
@@ -818,13 +904,14 @@ String.prototype.leoSplit=function(object=String,limit) {
     }
 }  
 
-function countingSymbols(word,symbol) { 
-    var counter= 0
-    for(var i=0;i< word.length;i++) { 
-        if(word.charAt(i) == Symbol) { 
+function countingSymbols(word) { 
+    countingArea=word
+    var counter=0
+    for(var i=0;i< countingArea.length;i++) { 
+        if(countingArea.charAt(i) == "+" || countingArea.charAt(i) == "-" ||countingArea.charAt(i) == "*" ||countingArea.charAt(i) == "/" ) { 
             counter++
         }
-    } 
+    }  
     return counter
 }
 
