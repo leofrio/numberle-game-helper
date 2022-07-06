@@ -843,27 +843,27 @@ function bigEquationOpe(squabble,signToOperate) {
     var part1=squabble.leoSplit(signToOperate,1)[0] 
     var part2=squabble.leoSplit(signToOperate,1)[1]
     if(countingSymbols(part1) >1 ) { 
-        if(part1.split("").include("*")) { 
+        if(part1.split("").includes("*")) { 
             part1=bigEquationOpe(part1,"*")
-        } else if(part1.split("").include("/")) { 
+        } else if(part1.split("").includes("/")) { 
             part1=bigEquationOpe(part1,"/")
-        } else if(part1.split("").include("+")) { 
+        } else if(part1.split("").includes("+")) { 
             part1=bigEquationOpe(part1,"+")
-        } else if(part1.split("").include("-")) { 
+        } else if(part1.split("").includes("-")) { 
             part1=bigEquationOpe(part1,"-")
         }
-    } 
+    }   
     else { 
         part1=parseInt(part1)
     } 
     if(countingSymbols(part2) >1) { 
-        if(part2.split("").include("*")) { 
+        if(part2.split("").includes("*")) { 
             part2=bigEquationOpe(part2,"*")
-        } else if(part2.split("").include("/")) { 
+        } else if(part2.split("").includes("/")) { 
             part2=bigEquationOpe(part2,"/")
-        } else if(part2.split("").include("+")) { 
+        } else if(part2.split("").includes("+")) { 
             part2=bigEquationOpe(part2,"+")
-        } else if(part2.split("").include("-")) { 
+        } else if(part2.split("").includes("-")) { 
             part2=bigEquationOpe(part2,"-")
         }
     } 
